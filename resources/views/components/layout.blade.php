@@ -68,6 +68,14 @@
                             Create Fakultas
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a
+                            class="nav-link {{ request()->routeis('prodi.index') ? 'active bg-black fw-bold text-white' : '' }}"
+                            href="/prodi/create"
+                        >
+                            Tambah Prodi
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
