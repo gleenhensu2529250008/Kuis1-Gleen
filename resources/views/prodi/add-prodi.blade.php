@@ -1,18 +1,29 @@
 <x-layout>
     <h1>Tambah Prodi</h1>
 
-    <form action="/prodi" method="POST" enctype="multipart/form-data"> 
-    @csrf
-    <div class="form-group">
-        <select name="fakultas_id" class="form-select">
-            <option value="">Pilih Fakultas</option>
-            @foreach ($fakultas as $item)
-                 <option value="{{ $item->id }}">
-                    {{$item->name}}
-                </option>
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
             @endforeach
-        </select>
+        </ul>
     </div>
+    @endif  
+    
+    <form action="/prodi" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="form-group">
+            <select name="fakultas_id" class="form-select">
+                <option value="">Pilih Fakultas</option>
+                @foreach ( $fakultas as $item )
+                    <option value="{{ $item->id }}">
+                        {{$item->name}}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
     <div class="form-group">
         <input name="nama_prodi" type="text" class="form-control">
     </div>
@@ -22,6 +33,19 @@
     <div class="form-group">
         <input name="photo_kaprodi" type="file" accept="image/*" class="form-control">
     </div>
-    <button type="submit" class="btn btn-primary">Simpan</button>
+
+                <button type="submit" class="btn btn-primary">
+
+                Simpan
+
+            </button>
+
+            {{-- Tombol kembali --}}
+            <a href="/fakultas" class="btn btn-secondary">
+
+                Kembali
+
+            </a>
     </form>
+
 </x-layout>

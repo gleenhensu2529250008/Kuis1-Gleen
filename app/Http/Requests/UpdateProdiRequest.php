@@ -12,7 +12,7 @@ class UpdateProdiRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true; // diubah dari false ke true
     }
 
     /**
@@ -23,7 +23,11 @@ class UpdateProdiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'fakultas_id'   => 'required',
+            'nama_prodi'    => 'required|min:3',
+            'nama_kaprodi'  => 'required|min:3',
+            // foto tidak wajib saat update (boleh kosong = pakai foto lama)
+            'photo_kaprodi' => 'nullable|max:1024|mimetypes:image/*',
         ];
     }
 }

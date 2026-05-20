@@ -16,7 +16,7 @@ class ProdiController extends Controller
     public function index()
     {
         $prodi = Prodi::with(['fakultas'])->get();
-        return view('prodi.list-prodi', compact('prodi'));
+        return view('prodi.list-Prodi', compact('prodi'));
     }
 
     /**
@@ -35,19 +35,17 @@ class ProdiController extends Controller
     {
         $validate = $request->safe();
 
-
-
-        $filePath=Storage::disk("public")->putFile("profile_kaprodi", $validate->file('photo_kaprodi'));
+        $filePath = Storage::disk('public')
+            ->putFile('profile_kaprodi', $request->file('photo_kaprodi'));
 
         Prodi::create([
-        'fakultas_id'=> $validate->fakultas_id,
-        'nama_prodi'=> $validate->nama_prodi,
-        'nama_kaprodi'=> $validate->nama_kaprodi,
-        'photo_kaprodi'=> $filePath
-
+            'fakultas_id'  => $validate->fakultas_id,
+            'nama_prodi'   => $validate->nama_prodi,
+            'nama_kaprodi' => $validate->nama_kaprodi,
+            'photo_kaprodi' => $filePath
         ]);
 
-        return redirect('/prodi')->with('success', 'Data Prodi Berhasil Di Simpan');
+        return redirect('/prodi')->with('success', 'Data Prodi Berhasil Ditambah');
     }
 
     /**
@@ -55,7 +53,7 @@ class ProdiController extends Controller
      */
     public function show(Prodi $prodi)
     {
-        //
+        return view('prodi.detail-prodi', compact('prodi'));
     }
 
     /**
@@ -63,7 +61,8 @@ class ProdiController extends Controller
      */
     public function edit(Prodi $prodi)
     {
-        //
+        $fakultas = Fakultas::all();
+        return view('prodi.edit-prodi', compact('prodi', 'fakultas'));
     }
 
     /**
@@ -71,7 +70,30 @@ class ProdiController extends Controller
      */
     public function update(UpdateProdiRequest $request, Prodi $prodi)
     {
-        //
+        $validate = $request->safe();
+
+        // Jika ada foto baru yang baru diupload
+        if ($request->hasFile('photo_kaprodi')) {
+            // Hapus foto lama dari storage
+            Storage::disk('public')->delete($prodi->photo_kaprodi);
+
+            // Upload foto baru
+            $filePath = Storage::disk('public')
+                ->putFile('profile_kaprodi', $request->file('photo_kaprodi'));
+        } 
+        else {
+            // foto lama
+            $filePath = $prodi->photo_kaprodi;
+        }
+
+        $prodi->update([
+            'fakultas_id'   => $validate->fakultas_id,
+            'nama_prodi'    => $validate->nama_prodi,
+            'nama_kaprodi'  => $validate->nama_kaprodi,
+            'photo_kaprodi' => $filePath
+        ]);
+
+        return redirect('/prodi')->with('success', 'Data Prodi Berhasil Diupdate');
     }
 
     /**
@@ -79,6 +101,11 @@ class ProdiController extends Controller
      */
     public function destroy(Prodi $prodi)
     {
-        //
+        // Hapus foto dari storage sebelum delete data
+        Storage::disk('public')->delete($prodi->photo_kaprodi);
+
+        $prodi->delete();
+
+        return redirect()->back()->with('success', 'Data Prodi Berhasil Dihapus');
     }
 }
