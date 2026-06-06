@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(Fakultas::class)->constrained('fakultas');
             $table->string('nama_prodi');
             $table->string('nama_kaprodi');
-            $table->string('photo_kaprodi');
+            $table->string('photo_kaprodi')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

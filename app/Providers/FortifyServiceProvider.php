@@ -13,6 +13,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -21,9 +23,47 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(
+            RegisterResponseContract::class,
+            function() {
+                return new class implements RegisterResponseContract{
+                    public function toResponse($request)
+                    {
+                        if ($request->expectsJson()) {
+                            return response()->json([
+                                'success' => true,
+                                'user' => $request->user(),
+                                'token' => $request->user()->createToken('api')->plainTextToken
+                            ]);
+                        }
+                        return redirect()->intended(Fortify::redirects('register'));
+                    }
+                };
+            }
+        );
+
+        $this->app->singleton(
+            LoginResponseContract::class,
+            function() {
+                return new class implements LoginResponseContract{
+                    public function toResponse($request)
+                    {
+                        if ($request->expectsJson()) {
+                            return response()->json([
+                                'success' => true,
+                                'user' => $request->user(),
+                                'token' => $request->user()->createToken('api')->plainTextToken
+                            ]);
+                        }
+                        return redirect()->intended(Fortify::redirects('login'));
+                    }
+                };
+            }
+        );
     }
 
+        
+    
     /**
      * Bootstrap any application services.
      */
